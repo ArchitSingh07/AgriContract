@@ -97,6 +97,10 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
   ];
 
   const [products] = useState<Product[]>(mockProducts);
+  const [showEmptyProducts, setShowEmptyProducts] = useState(false); // Toggle this to test empty state
+
+  // Use empty array when testing empty state, otherwise use mockProducts
+  const displayProducts = showEmptyProducts ? [] : products;
 
   const stats = [
     {
@@ -107,7 +111,7 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
     },
     {
       title: user.userType === 'farmer' ? 'Total Revenue' : 'Total Spent',
-      value: '$24,500',
+      value: '₹2,45,000',
       icon: DollarSign,
       color: 'text-accent'
     },
@@ -227,17 +231,27 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4">
           {user.userType === 'farmer' ? (
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => onNavigate('list-product')}
+            >
               <Plus className="h-4 w-4 mr-2" />
               List New Product
             </Button>
           ) : (
-            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button 
+              className="bg-primary hover:bg-primary/90 text-primary-foreground"
+              onClick={() => onNavigate('products')}
+            >
               <ShoppingCart className="h-4 w-4 mr-2" />
               Browse Products
             </Button>
           )}
-          <Button variant="outline" className="border-border hover:bg-accent hover:text-accent-foreground">
+          <Button 
+            variant="outline" 
+            className="border-border hover:bg-accent hover:text-accent-foreground"
+            onClick={() => onNavigate('contracts')}
+          >
             <FileText className="h-4 w-4 mr-2" />
             View Contracts
           </Button>
@@ -267,48 +281,72 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {products.slice(0, 6).map((product) => (
-                <Card 
-                  key={product.id} 
-                  className="bg-input-background border-border hover:border-primary/50 transition-all cursor-pointer"
-                  onClick={() => onNavigate('product-details', product)}
-                >
-                  <CardContent className="p-4">
-                    <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
-                      <img 
-                        src={product.image} 
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-foreground">{product.name}</h3>
-                        <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
-                          {product.type}
-                        </Badge>
+            {displayProducts.length === 0 ? (
+              <div className="text-center py-12">
+                <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-foreground mb-2">
+                  {user.userType === 'farmer' ? 'No Products Listed' : 'No Products Available'}
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  {user.userType === 'farmer' 
+                    ? 'Start by listing your first product to connect with buyers' 
+                    : 'Check back later for fresh products from local farmers'
+                  }
+                </p>
+                {user.userType === 'farmer' && (
+                  <Button 
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    onClick={() => onNavigate('list-product')}
+                  >
+                    <Plus className="h-4 w-4 mr-2" />
+                    List Your First Product
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {displayProducts.slice(0, 6).map((product) => (
+                  <Card 
+                    key={product.id} 
+                    className="bg-input-background border-border hover:border-primary/50 transition-all cursor-pointer"
+                    onClick={() => onNavigate('product-details', product)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
+                        <img 
+                          src={product.image} 
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">
-                        {product.description}
-                      </p>
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-muted-foreground">
-                          {product.quantity} {product.unit}
-                        </span>
-                        <span className="font-semibold text-accent">
-                          ${product.price}/{product.unit}
-                        </span>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <h3 className="font-semibold text-foreground">{product.name}</h3>
+                          <Badge variant="secondary" className="bg-secondary text-secondary-foreground">
+                            {product.type}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2">
+                          {product.description}
+                        </p>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">
+                            {product.quantity} {product.unit}
+                          </span>
+                          <span className="font-semibold text-accent">
+                            ₹{product.price}/{product.unit}
+                          </span>
+                        </div>
+                        <div className="flex items-center text-xs text-muted-foreground">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          Harvest: {new Date(product.harvestDate).toLocaleDateString()}
+                        </div>
                       </div>
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <Calendar className="h-3 w-3 mr-1" />
-                        Harvest: {new Date(product.harvestDate).toLocaleDateString()}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>

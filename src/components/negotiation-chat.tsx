@@ -219,7 +219,7 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                             <div className="flex items-center space-x-2">
                               <DollarSign className="h-4 w-4 text-muted-foreground" />
                               <span className="text-muted-foreground">Price:</span>
-                              <span className="font-medium text-foreground">${message.offer?.pricePerUnit}/kg</span>
+                              <span className="font-medium text-foreground">₹{message.offer?.pricePerUnit}/kg</span>
                             </div>
                             <div className="flex items-center space-x-2">
                               <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -231,7 +231,7 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                             <div className="flex items-center space-x-2">
                               <DollarSign className="h-4 w-4 text-accent" />
                               <span className="text-muted-foreground">Total:</span>
-                              <span className="font-bold text-accent">${message.offer?.totalPrice?.toLocaleString()}</span>
+                              <span className="font-bold text-accent">₹{message.offer?.totalPrice?.toLocaleString()}</span>
                             </div>
                           </div>
                           
@@ -297,7 +297,7 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                       />
                     </div>
                     <div>
-                      <label className="text-sm font-medium text-foreground">Price per kg ($)</label>
+                      <label className="text-sm font-medium text-foreground">Price per kg (₹)</label>
                       <Input
                         type="number"
                         value={newOffer.pricePerUnit}
@@ -324,7 +324,7 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                   <div className="flex items-center justify-between p-3 bg-background rounded border border-border">
                     <span className="text-sm text-muted-foreground">Total Price:</span>
                     <span className="font-bold text-accent">
-                      ${(newOffer.quantity * newOffer.pricePerUnit).toLocaleString()}
+                      ₹{(newOffer.quantity * newOffer.pricePerUnit).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex space-x-2">
@@ -373,20 +373,20 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
 
         {/* Sidebar */}
         <div className="w-80 border-l border-border bg-card p-4 space-y-4">
-          <Card className="bg-input-background border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-sm">Negotiation Details</CardTitle>
+              <CardTitle className="text-sm text-card-foreground">Negotiation Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
                 <span className="text-sm text-muted-foreground">Product:</span>
-                <p className="font-medium text-foreground">{negotiationData.productName}</p>
+                <p className="font-medium text-card-foreground">{negotiationData.productName}</p>
               </div>
               <div>
                 <span className="text-sm text-muted-foreground">
                   {user.userType === 'buyer' ? 'Seller:' : 'Buyer:'}
                 </span>
-                <p className="font-medium text-foreground">
+                <p className="font-medium text-card-foreground">
                   {user.userType === 'buyer' ? negotiationData.sellerName : negotiationData.buyerName}
                 </p>
               </div>
@@ -394,15 +394,15 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                 <span className="text-sm text-muted-foreground">Status:</span>
                 <div className="flex items-center space-x-2 mt-1">
                   <Clock className="h-4 w-4 text-yellow-500" />
-                  <span className="text-sm font-medium text-foreground">In Progress</span>
+                  <span className="text-sm font-medium text-card-foreground">In Progress</span>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-input-background border-border">
+          <Card className="bg-card border-border">
             <CardHeader>
-              <CardTitle className="text-sm">Quick Actions</CardTitle>
+              <CardTitle className="text-sm text-card-foreground">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
               <Button 

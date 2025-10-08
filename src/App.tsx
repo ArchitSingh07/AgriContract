@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { LandingPage } from "./components/landing-page";
 import { UserTypeSelection } from "./components/user-type-selection";
 import { LoginPage } from "./components/login-page";
 import { Dashboard } from "./components/dashboard";
@@ -9,10 +8,13 @@ import { ContractFinalization } from "./components/contract-finalization";
 import { ContractView } from "./components/contract-view";
 import { PaymentPage } from "./components/payment-page";
 import { ProfilePage } from "./components/profile-page";
+import { ListProduct } from "./components/list-product";
+import { ProductsPage } from "./components/products-page";
+import { ContractsPage } from "./components/contracts-page";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(
-    "landing",
+    "user-type-selection",
   );
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedUserType, setSelectedUserType] = useState<
@@ -103,6 +105,27 @@ export default function App() {
           onLogout={handleLogout}
           theme={theme}
           onToggleTheme={toggleTheme}
+        />
+      );
+    case "list-product":
+      return (
+        <ListProduct
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "products":
+      return (
+        <ProductsPage
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "contracts":
+      return (
+        <ContractsPage
+          user={currentUser}
+          onNavigate={handleNavigate}
         />
       );
     case "product-details":

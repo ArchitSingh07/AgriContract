@@ -125,7 +125,7 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-lg text-muted-foreground">Price per {product.unit}:</span>
-                <span className="text-2xl font-bold text-accent">${product.price}</span>
+                <span className="text-2xl font-bold text-accent">₹{product.price}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Available Quantity:</span>
@@ -217,7 +217,7 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-muted-foreground">Estimated Total:</span>
                     <span className="text-xl font-bold text-accent">
-                      ${(quantity * product.price).toLocaleString()}
+                      ₹{(quantity * product.price).toLocaleString()}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
