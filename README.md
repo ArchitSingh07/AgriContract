@@ -1,5 +1,4 @@
-
-  # 🌾 Contract Farming Platform - AgriContract
+# 🌾 Contract Farming Platform - AgriContract
 
 A comprehensive digital platform that facilitates assured contract farming agreements between farmers and buyers, providing market stability and reducing agricultural risks.
 
@@ -163,4 +162,3 @@ For support, email support@agricontract.com or join our Slack channel.
 **Built with ❤️ for the agricultural community**
 
 > "Connecting farmers and buyers for a sustainable agricultural future"
-  
