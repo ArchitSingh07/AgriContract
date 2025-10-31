@@ -43,7 +43,7 @@ export function UserTypeSelection({ onSelectUserType, theme, onToggleTheme }: Us
         {/* User Type Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Farmer Card */}
-          <Card 
+          <Card
             className="bg-card border-border hover:border-primary/50 transition-all cursor-pointer group"
             onClick={() => onSelectUserType('farmer')}
           >
@@ -75,7 +75,7 @@ export function UserTypeSelection({ onSelectUserType, theme, onToggleTheme }: Us
                   <span>Manage contracts digitally</span>
                 </li>
               </ul>
-              <Button 
+              <Button
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -89,7 +89,7 @@ export function UserTypeSelection({ onSelectUserType, theme, onToggleTheme }: Us
           </Card>
 
           {/* Buyer Card */}
-          <Card 
+          <Card
             className="bg-card border-border hover:border-primary/50 transition-all cursor-pointer group"
             onClick={() => onSelectUserType('buyer')}
           >
@@ -121,7 +121,7 @@ export function UserTypeSelection({ onSelectUserType, theme, onToggleTheme }: Us
                   <span>Secure contract agreements</span>
                 </li>
               </ul>
-              <Button 
+              <Button
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -141,8 +141,8 @@ export function UserTypeSelection({ onSelectUserType, theme, onToggleTheme }: Us
             <div className="text-center space-y-4">
               <h3 className="text-xl font-bold text-card-foreground">Contract Farming Platform</h3>
               <p className="text-muted-foreground leading-relaxed">
-                Our comprehensive platform facilitates assured contract farming agreements between farmers and buyers, 
-                providing stability by ensuring farmers have guaranteed buyers for their produce while offering buyers 
+                Our comprehensive platform facilitates assured contract farming agreements between farmers and buyers,
+                providing stability by ensuring farmers have guaranteed buyers for their produce while offering buyers
                 direct access to quality agricultural products.
               </p>
             </div>
@@ -152,7 +152,7 @@ export function UserTypeSelection({ onSelectUserType, theme, onToggleTheme }: Us
         {/* Key Features Section */}
         <div className="space-y-4">
           <h3 className="text-xl font-bold text-center text-foreground">Platform Features</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card className="bg-card border-border">
               <CardContent className="p-4">
@@ -257,7 +257,7 @@ export function UserTypeSelection({ onSelectUserType, theme, onToggleTheme }: Us
         {/* How It Works Section */}
         <div className="space-y-4">
           <h3 className="text-xl font-bold text-center text-foreground">How It Works</h3>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Card className="bg-card border-border text-center">
               <CardContent className="p-4 space-y-3">

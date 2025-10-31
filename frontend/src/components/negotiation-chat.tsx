@@ -5,11 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
-import { 
-  ArrowLeft, 
-  Send, 
-  Package, 
-  Calendar, 
+import {
+  ArrowLeft,
+  Send,
+  Package,
+  Calendar,
   DollarSign,
   CheckCircle,
   Clock,
@@ -144,8 +144,8 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
       <header className="bg-card border-b border-border p-4 flex-shrink-0">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               onClick={() => onNavigate('dashboard')}
               className="text-muted-foreground hover:text-primary"
@@ -157,7 +157,7 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
               <p className="text-sm text-muted-foreground">{negotiationData.productName}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-primary text-primary-foreground text-sm">
@@ -188,16 +188,14 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                   <div className={`max-w-md ${message.senderId === user.id ? 'order-2' : 'order-1'}`}>
                     {message.type === 'message' ? (
                       <div
-                        className={`p-3 rounded-lg ${
-                          message.senderId === user.id
+                        className={`p-3 rounded-lg ${message.senderId === user.id
                             ? 'bg-primary text-primary-foreground'
                             : 'bg-card border border-border text-foreground'
-                        }`}
+                          }`}
                       >
                         <p>{message.content}</p>
-                        <p className={`text-xs mt-1 ${
-                          message.senderId === user.id ? 'text-primary-foreground/70' : 'text-muted-foreground'
-                        }`}>
+                        <p className={`text-xs mt-1 ${message.senderId === user.id ? 'text-primary-foreground/70' : 'text-muted-foreground'
+                          }`}>
                           {new Date(message.timestamp).toLocaleTimeString()}
                         </p>
                       </div>
@@ -234,19 +232,19 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                               <span className="font-bold text-accent">₹{message.offer?.totalPrice?.toLocaleString()}</span>
                             </div>
                           </div>
-                          
+
                           {message.senderId !== user.id && (
                             <div className="flex space-x-2 pt-2">
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 onClick={() => acceptOffer(message.offer)}
                                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
                               >
                                 <CheckCircle className="h-3 w-3 mr-1" />
                                 Accept
                               </Button>
-                              <Button 
-                                size="sm" 
+                              <Button
+                                size="sm"
                                 variant="outline"
                                 onClick={() => setShowOfferForm(true)}
                                 className="border-border hover:bg-accent hover:text-accent-foreground"
@@ -255,7 +253,7 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                               </Button>
                             </div>
                           )}
-                          
+
                           <p className="text-xs text-muted-foreground">
                             {new Date(message.timestamp).toLocaleTimeString()}
                           </p>
@@ -263,7 +261,7 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                       </Card>
                     )}
                   </div>
-                  
+
                   <Avatar className={`h-8 w-8 ${message.senderId === user.id ? 'order-1 ml-2' : 'order-2 mr-2'}`}>
                     <AvatarFallback className="bg-secondary text-secondary-foreground text-sm">
                       {message.senderName.charAt(0)}
@@ -331,8 +329,8 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                     <Button onClick={sendOffer} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                       Send Offer
                     </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => setShowOfferForm(false)}
                       className="border-border hover:bg-accent hover:text-accent-foreground"
                     >
@@ -354,14 +352,14 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                 className="bg-input-background border-border"
               />
-              <Button 
+              <Button
                 onClick={() => setShowOfferForm(!showOfferForm)}
                 variant="outline"
                 className="border-border hover:bg-accent hover:text-accent-foreground"
               >
                 Offer
               </Button>
-              <Button 
+              <Button
                 onClick={sendMessage}
                 className="bg-primary hover:bg-primary/90 text-primary-foreground"
               >
@@ -405,26 +403,26 @@ export function NegotiationChat({ negotiationData, user, onNavigate }: Negotiati
               <CardTitle className="text-sm text-card-foreground">Quick Actions</CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="w-full justify-start border-border hover:bg-accent hover:text-accent-foreground"
                 onClick={() => setShowOfferForm(true)}
               >
                 <DollarSign className="h-4 w-4 mr-2" />
                 Make Offer
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="w-full justify-start border-border hover:bg-accent hover:text-accent-foreground"
               >
                 <User className="h-4 w-4 mr-2" />
                 View Profile
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 className="w-full justify-start border-border hover:bg-accent hover:text-accent-foreground"
               >
                 <Package className="h-4 w-4 mr-2" />

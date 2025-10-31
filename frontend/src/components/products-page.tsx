@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { 
+import {
   ArrowLeft,
   Package,
   Plus,
@@ -45,8 +45,8 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
       {/* Header */}
       <header className="bg-card border-b border-border p-4">
         <div className="max-w-6xl mx-auto flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => onNavigate('dashboard')}
             className="text-muted-foreground hover:text-primary"
@@ -58,14 +58,14 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
               {user.userType === 'farmer' ? 'Your Products' : 'Available Products'}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {user.userType === 'farmer' 
-                ? 'Manage your listed agricultural products' 
+              {user.userType === 'farmer'
+                ? 'Manage your listed agricultural products'
                 : 'Browse fresh produce from local farmers'
               }
             </p>
           </div>
           {user.userType === 'farmer' && (
-            <Button 
+            <Button
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
               onClick={() => onNavigate('list-product')}
             >
@@ -109,13 +109,13 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
                   {user.userType === 'farmer' ? 'No Products Listed' : 'No Products Available'}
                 </h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  {user.userType === 'farmer' 
-                    ? 'You haven\'t listed any products yet. Start by adding your first product to connect with potential buyers.' 
+                  {user.userType === 'farmer'
+                    ? 'You haven\'t listed any products yet. Start by adding your first product to connect with potential buyers.'
                     : 'No products are currently available. Check back later for fresh produce from local farmers.'
                   }
                 </p>
                 {user.userType === 'farmer' && (
-                  <Button 
+                  <Button
                     className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     onClick={() => onNavigate('list-product')}
                   >
@@ -127,15 +127,15 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
-                  <Card 
-                    key={product.id} 
+                  <Card
+                    key={product.id}
                     className="bg-input-background border-border hover:border-primary/50 transition-all cursor-pointer group"
                     onClick={() => onNavigate('product-details', product)}
                   >
                     <CardContent className="p-4">
                       <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
-                        <img 
-                          src={product.image} 
+                        <img
+                          src={product.image}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />

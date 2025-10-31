@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
-import { 
+import {
   ArrowLeft,
   FileText,
   Calendar,
@@ -55,8 +55,8 @@ export function ContractsPage({ user, onNavigate }: ContractsPageProps) {
       {/* Header */}
       <header className="bg-card border-b border-border p-4">
         <div className="max-w-6xl mx-auto flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => onNavigate('dashboard')}
             className="text-muted-foreground hover:text-primary"
@@ -68,13 +68,13 @@ export function ContractsPage({ user, onNavigate }: ContractsPageProps) {
               {user.userType === 'farmer' ? 'Your Contracts' : 'Your Contracts'}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {user.userType === 'farmer' 
-                ? 'Manage contracts with your buyers' 
+              {user.userType === 'farmer'
+                ? 'Manage contracts with your buyers'
                 : 'Track your contracts with farmers'
               }
             </p>
           </div>
-          <Button 
+          <Button
             className="bg-primary hover:bg-primary/90 text-primary-foreground"
             onClick={() => onNavigate('products')}
           >
@@ -115,12 +115,12 @@ export function ContractsPage({ user, onNavigate }: ContractsPageProps) {
                   No Contracts Available
                 </h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  {user.userType === 'farmer' 
-                    ? 'You don\'t have any contracts yet. Once buyers start negotiating for your products, contracts will appear here.' 
+                  {user.userType === 'farmer'
+                    ? 'You don\'t have any contracts yet. Once buyers start negotiating for your products, contracts will appear here.'
                     : 'You haven\'t made any contracts yet. Start by browsing products and initiating negotiations with farmers.'
                   }
                 </p>
-                <Button 
+                <Button
                   className="bg-primary hover:bg-primary/90 text-primary-foreground"
                   onClick={() => onNavigate('products')}
                 >
@@ -131,8 +131,8 @@ export function ContractsPage({ user, onNavigate }: ContractsPageProps) {
             ) : (
               <div className="space-y-4">
                 {filteredContracts.map((contract) => (
-                  <Card 
-                    key={contract.id} 
+                  <Card
+                    key={contract.id}
                     className="bg-input-background border-border hover:border-primary/50 transition-all cursor-pointer"
                     onClick={() => onNavigate('contract-view', contract)}
                   >
@@ -143,8 +143,8 @@ export function ContractsPage({ user, onNavigate }: ContractsPageProps) {
                             {contract.productName}
                           </h3>
                           <p className="text-sm text-muted-foreground">
-                            {user.userType === 'farmer' 
-                              ? `Contract with ${contract.buyerName}` 
+                            {user.userType === 'farmer'
+                              ? `Contract with ${contract.buyerName}`
                               : `Contract with ${contract.farmerName}`
                             }
                           </p>
@@ -153,7 +153,7 @@ export function ContractsPage({ user, onNavigate }: ContractsPageProps) {
                           {contract.status.charAt(0).toUpperCase() + contract.status.slice(1)}
                         </Badge>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                         <div>
                           <p className="text-muted-foreground">Quantity</p>

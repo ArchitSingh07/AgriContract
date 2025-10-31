@@ -4,12 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Separator } from './ui/separator';
-import { 
-  ArrowLeft, 
-  Calendar, 
-  MapPin, 
-  Phone, 
-  Mail, 
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Phone,
+  Mail,
   MessageCircle,
   Star,
   Truck,
@@ -57,8 +57,8 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
       {/* Header */}
       <header className="bg-card border-b border-border p-4">
         <div className="max-w-4xl mx-auto flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => onNavigate('dashboard')}
             className="text-muted-foreground hover:text-primary"
@@ -79,8 +79,8 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
           {/* Product Images */}
           <div className="space-y-4">
             <div className="aspect-square bg-muted rounded-lg overflow-hidden">
-              <img 
-                src={product.image} 
+              <img
+                src={product.image}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -88,8 +88,8 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
             <div className="grid grid-cols-4 gap-2">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="aspect-square bg-muted rounded-lg overflow-hidden opacity-60">
-                  <img 
-                    src={product.image} 
+                  <img
+                    src={product.image}
                     alt={`${product.name} ${i}`}
                     className="w-full h-full object-cover"
                   />
@@ -108,7 +108,7 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
                 </Badge>
               </div>
               <p className="text-lg text-muted-foreground mb-4">{product.description}</p>
-              
+
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center text-yellow-400">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -191,8 +191,8 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
                 <div className="flex items-center space-x-4">
                   <label className="text-sm font-medium text-foreground">Quantity needed:</label>
                   <div className="flex items-center space-x-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => setQuantity(Math.max(50, quantity - 50))}
                       className="border-border hover:bg-accent hover:text-accent-foreground"
@@ -202,8 +202,8 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
                     <span className="px-4 py-2 bg-card border border-border rounded text-center min-w-[80px] text-card-foreground font-medium">
                       {quantity} {product.unit}
                     </span>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       size="sm"
                       onClick={() => setQuantity(Math.min(product.quantity, quantity + 50))}
                       className="border-border hover:bg-accent hover:text-accent-foreground"
@@ -212,7 +212,7 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="p-4 bg-input-background border border-border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-muted-foreground">Estimated Total:</span>
@@ -226,14 +226,14 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
                 </div>
 
                 <div className="flex space-x-3">
-                  <Button 
+                  <Button
                     onClick={handleStartNegotiation}
                     className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                   >
                     <MessageCircle className="h-4 w-4 mr-2" />
                     Start Negotiation
                   </Button>
-                  <Button 
+                  <Button
                     variant="outline"
                     className="border-border hover:bg-accent hover:text-accent-foreground"
                   >
@@ -245,13 +245,13 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
 
             {isOwnProduct && (
               <div className="space-y-3">
-                <Button 
+                <Button
                   variant="outline"
                   className="w-full border-border hover:bg-accent hover:text-accent-foreground"
                 >
                   Edit Product
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
                 >

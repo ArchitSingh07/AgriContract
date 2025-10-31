@@ -1,129 +1,256 @@
-# 🌾 Contract Farming Platform - AgriContract
+# CropContract - Contract Farming Platform# 🌾 Contract Farming Platform - AgriContract
 
-A comprehensive digital platform that facilitates assured contract farming agreements between farmers and buyers, providing market stability and reducing agricultural risks.
 
-## 🎯 Project Overview
 
-**Background**: Farmers often face uncertainties in market access, leading to fluctuating incomes. Contract farming can provide stability by ensuring farmers have guaranteed buyers for their produce.
+A comprehensive MERN stack platform connecting farmers directly with buyers through secure contract farming agreements.A comprehensive digital platform that facilitates assured contract farming agreements between farmers and buyers, providing market stability and reducing agricultural risks.
 
-**Solution**: AgriContract is an online marketplace that connects farmers with potential buyers, offering tools for contract management, price negotiation, and secure payment processing, thereby enhancing income stability and reducing market risks.
 
-## ✨ Key Features
+
+## 📁 Project Structure## 🎯 Project Overview
+
+
+
+```**Background**: Farmers often face uncertainties in market access, leading to fluctuating incomes. Contract farming can provide stability by ensuring farmers have guaranteed buyers for their produce.
+
+CropContract/
+
+├── frontend/          # React + Vite frontend application**Solution**: AgriContract is an online marketplace that connects farmers with potential buyers, offering tools for contract management, price negotiation, and secure payment processing, thereby enhancing income stability and reducing market risks.
+
+├── backend/           # Node.js + Express backend (Coming Soon)
+
+└── README.md          # This file## ✨ Key Features
+
+```
 
 ### 🚀 Platform Capabilities
-- **Transparent Communication** - Direct messaging and negotiation tools between farmers and buyers
+
+## 🚀 Quick Start- **Transparent Communication** - Direct messaging and negotiation tools between farmers and buyers
+
 - **Secure Contracts** - Digital contract management with legal protection and automated enforcement
-- **Price Negotiation** - Fair and transparent pricing through built-in negotiation system with market insights
+
+### Frontend Development- **Price Negotiation** - Fair and transparent pricing through built-in negotiation system with market insights
+
 - **Secure Payment Processing** - Guaranteed timely payments with escrow services ensuring financial security
 
-### 👨‍🌾 For Farmers
-- List agricultural products on the marketplace
-- Connect with verified buyers directly
-- Negotiate contracts and pricing transparently
+```bash
+
+cd frontend### 👨‍🌾 For Farmers
+
+npm install- List agricultural products on the marketplace
+
+npm run dev- Connect with verified buyers directly
+
+```- Negotiate contracts and pricing transparently
+
 - Secure guaranteed payments through escrow
-- Manage contracts digitally with legal protection
+
+The frontend application will be available at `http://localhost:3000`- Manage contracts digitally with legal protection
+
 - Reduce market risks with predictable income
 
+### Backend Development (Coming Soon)
+
 ### 🏢 For Buyers
-- Browse fresh agricultural products from verified farmers
+
+Backend implementation with Node.js, Express, and MongoDB is planned.- Browse fresh agricultural products from verified farmers
+
 - Access quality produce directly from source
-- Negotiate terms and quantities transparently
+
+## 📖 About- Negotiate terms and quantities transparently
+
 - Ensure product quality and freshness standards
-- Secure contract agreements with automated enforcement
+
+**CropContract** is a digital platform revolutionizing agricultural trade in India by:- Secure contract agreements with automated enforcement
+
 - Build long-term relationships with reliable suppliers
 
-## 🛠️ Technology Stack
+- **Direct Connections**: Eliminating middlemen between farmers and buyers
 
-- **Frontend**: React 18.3.1 with TypeScript
+- **Secure Contracts**: Digital agreements with transparent terms## 🛠️ Technology Stack
+
+- **Fair Pricing**: Real-time negotiation ensuring market-driven prices
+
+- **Payment Security**: Escrow-based payment system for trust and transparency- **Frontend**: React 18.3.1 with TypeScript
+
 - **Build Tool**: Vite 6.3.5
-- **Styling**: Tailwind CSS with custom design system
-- **UI Components**: Radix UI primitives
-- **Icons**: Lucide React
-- **Development**: Hot Module Replacement (HMR)
 
-## 🎨 Design Features
+### Key Features- **Styling**: Tailwind CSS with custom design system
+
+- **UI Components**: Radix UI primitives
+
+#### For Farmers 🌾- **Icons**: Lucide React
+
+- List agricultural products with detailed specifications- **Development**: Hot Module Replacement (HMR)
+
+- Negotiate prices directly with verified buyers
+
+- Secure digital contracts with payment guarantees## 🎨 Design Features
+
+- Track contract status and delivery schedules
 
 - **🌙 Dark/Light Theme**: Complete theme switching with proper contrast
-- **📱 Responsive Design**: Mobile-first approach for all devices
-- **♿ Accessibility**: Built with Radix UI for keyboard navigation and screen readers
-- **🎯 Modern UI**: Clean, professional interface with smooth animations
-- **🔧 Component Library**: Reusable UI components following design system principles
+
+#### For Buyers 🛒- **📱 Responsive Design**: Mobile-first approach for all devices
+
+- Browse verified agricultural products- **♿ Accessibility**: Built with Radix UI for keyboard navigation and screen readers
+
+- Direct communication with farmers- **🎯 Modern UI**: Clean, professional interface with smooth animations
+
+- Transparent pricing and quality specifications- **🔧 Component Library**: Reusable UI components following design system principles
+
+- Reliable supply chain management
 
 ## 🚀 Getting Started
 
-### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn package manager
+#### Platform Benefits 🎯
+
+- **Transparency**: All transactions and contracts are documented### Prerequisites
+
+- **Security**: Verified users and secure payment processing- Node.js (v18 or higher)
+
+- **Efficiency**: Streamlined negotiation and contract finalization- npm or yarn package manager
+
+- **Trust**: Escrow system ensures payment security for both parties
 
 ### Installation
 
+## 🛠️ Technology Stack
+
 1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/contract-farming-platform.git
-   cd contract-farming-platform
-   ```
 
-2. **Install dependencies**
-   ```bash
+### Frontend   ```bash
+
+- **React 18** - Modern UI library   git clone https://github.com/yourusername/contract-farming-platform.git
+
+- **TypeScript** - Type-safe development   cd contract-farming-platform
+
+- **Vite** - Lightning-fast build tool   ```
+
+- **Tailwind CSS** - Utility-first styling
+
+- **shadcn/ui** - High-quality component library2. **Install dependencies**
+
+- **Lucide React** - Beautiful icons   ```bash
+
    npm install
+
+### Backend (Planned)   ```
+
+- **Node.js** - JavaScript runtime
+
+- **Express** - Web application framework3. **Start development server**
+
+- **MongoDB** - NoSQL database   ```bash
+
+- **JWT** - Authentication   npm run dev
+
+- **Mongoose** - ODM for MongoDB   ```
+
+
+
+## 📱 Features Implemented4. **Open in browser**
+
    ```
 
-3. **Start development server**
-   ```bash
-   npm run dev
-   ```
+### ✅ Current Features   http://localhost:3000
 
-4. **Open in browser**
-   ```
-   http://localhost:3000
-   ```
+- User authentication (Farmer/Buyer roles)   ```
 
-### Available Scripts
+- Product listing with detailed specifications
 
-- `npm run dev` - Start development server with hot reload
-- `npm run build` - Build production version
-- `npm run preview` - Preview production build locally
+- Product search and filtering### Available Scripts
 
-## 📁 Project Structure
+- Real-time negotiation chat
 
-```
-src/
-├── components/           # React components
-│   ├── ui/              # Reusable UI components (Button, Card, etc.)
-│   ├── user-type-selection.tsx    # Landing page with features
-│   ├── login-page.tsx             # Authentication
-│   ├── dashboard.tsx              # Main dashboard
-│   ├── product-details.tsx        # Product information & negotiation
-│   ├── negotiation-chat.tsx       # Real-time negotiation
+- Contract creation and management- `npm run dev` - Start development server with hot reload
+
+- Profile management- `npm run build` - Build production version
+
+- Payment processing interface- `npm run preview` - Preview production build locally
+
+- Dark/Light theme support
+
+- Responsive design## 📁 Project Structure
+
+
+
+### 🔜 Upcoming Features```
+
+- Backend API implementationsrc/
+
+- Database integration├── components/           # React components
+
+- Real authentication system│   ├── ui/              # Reusable UI components (Button, Card, etc.)
+
+- Payment gateway integration│   ├── user-type-selection.tsx    # Landing page with features
+
+- Document upload for contracts│   ├── login-page.tsx             # Authentication
+
+- Email/SMS notifications│   ├── dashboard.tsx              # Main dashboard
+
+- Advanced analytics dashboard│   ├── product-details.tsx        # Product information & negotiation
+
+- Mobile application│   ├── negotiation-chat.tsx       # Real-time negotiation
+
 │   ├── contract-finalization.tsx  # Contract completion
-│   ├── payment-page.tsx           # Payment processing
+
+## 📂 Frontend Details│   ├── payment-page.tsx           # Payment processing
+
 │   └── profile-page.tsx           # User profile management
-├── styles/
+
+For detailed information about the frontend application, see [frontend/README.md](./frontend/README.md)├── styles/
+
 │   └── globals.css      # Global styles and CSS variables
-├── App.tsx              # Main application component
+
+## 🤝 Contributing├── App.tsx              # Main application component
+
 └── main.tsx            # Application entry point
-```
 
-## 🔄 How It Works
+Contributions are welcome! Please feel free to submit a Pull Request.```
 
-### 1. **Connect** 🤝
-Farmers list their crops and buyers browse available products on our marketplace
+
+
+1. Fork the project## 🔄 How It Works
+
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)### 1. **Connect** 🤝
+
+4. Push to the branch (`git push origin feature/AmazingFeature`)Farmers list their crops and buyers browse available products on our marketplace
+
+5. Open a Pull Request
 
 ### 2. **Negotiate** 💬
-Use platform tools to negotiate prices, quantities, and delivery terms transparently
 
-### 3. **Secure & Deliver** ✅
+## 📝 LicenseUse platform tools to negotiate prices, quantities, and delivery terms transparently
+
+
+
+This project is licensed under the MIT License.### 3. **Secure & Deliver** ✅
+
 Finalize contracts digitally and enjoy secure payments upon successful delivery
+
+## 👥 Team
 
 ## 🌟 Benefits
 
+Developed with ❤️ for revolutionizing agricultural trade in India.
+
 - **Market Stability** - Reduce market risks with guaranteed buyers and predictable income
-- **Quality Assurance** - Connect with verified farmers and ensure product quality standards  
+
+## 📧 Contact- **Quality Assurance** - Connect with verified farmers and ensure product quality standards  
+
 - **Enhanced Income** - Improve income stability through long-term contract agreements
+
+For queries and support, please open an issue on GitHub.
 
 ## 🤝 Contributing
 
+---
+
 We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+**Status**: 🚧 Active Development - Frontend Complete, Backend In Progress
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)

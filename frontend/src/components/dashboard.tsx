@@ -3,12 +3,12 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback } from './ui/avatar';
-import { 
-  Sprout, 
-  ShoppingCart, 
-  FileText, 
-  User, 
-  LogOut, 
+import {
+  Sprout,
+  ShoppingCart,
+  FileText,
+  User,
+  LogOut,
   Plus,
   Calendar,
   DollarSign,
@@ -138,20 +138,20 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
             <Sprout className="h-8 w-8 text-primary" />
             <h1 className="text-xl font-bold text-foreground">AgriContract</h1>
           </div>
-          
+
           <nav className="hidden md:flex items-center space-x-6">
             <Button variant="ghost" className="text-foreground hover:text-primary">
               Dashboard
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="text-muted-foreground hover:text-primary"
               onClick={() => onNavigate('products')}
             >
               Products
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               className="text-muted-foreground hover:text-primary"
               onClick={() => onNavigate('contracts')}
             >
@@ -172,16 +172,16 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
                 <Moon className="h-5 w-5" />
               )}
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               onClick={() => onNavigate('profile')}
               className="text-muted-foreground hover:text-primary"
             >
               <User className="h-5 w-5" />
             </Button>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="icon"
               onClick={onLogout}
               className="text-muted-foreground hover:text-destructive"
@@ -204,8 +204,8 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
             Welcome back, {user.name}!
           </h2>
           <p className="text-muted-foreground">
-            {user.userType === 'farmer' 
-              ? 'Manage your crops and connect with buyers' 
+            {user.userType === 'farmer'
+              ? 'Manage your crops and connect with buyers'
               : 'Discover fresh produce and connect with farmers'
             }
           </p>
@@ -231,7 +231,7 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4">
           {user.userType === 'farmer' ? (
-            <Button 
+            <Button
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
               onClick={() => onNavigate('list-product')}
             >
@@ -239,7 +239,7 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
               List New Product
             </Button>
           ) : (
-            <Button 
+            <Button
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
               onClick={() => onNavigate('products')}
             >
@@ -247,8 +247,8 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
               Browse Products
             </Button>
           )}
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="border-border hover:bg-accent hover:text-accent-foreground"
             onClick={() => onNavigate('contracts')}
           >
@@ -264,8 +264,8 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
               <span>
                 {user.userType === 'farmer' ? 'Your Products' : 'Available Products'}
               </span>
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 onClick={() => onNavigate('products')}
                 className="border-border hover:bg-accent hover:text-accent-foreground"
@@ -274,8 +274,8 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
               </Button>
             </CardTitle>
             <CardDescription>
-              {user.userType === 'farmer' 
-                ? 'Manage your listed products' 
+              {user.userType === 'farmer'
+                ? 'Manage your listed products'
                 : 'Fresh produce available for contract'
               }
             </CardDescription>
@@ -288,13 +288,13 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
                   {user.userType === 'farmer' ? 'No Products Listed' : 'No Products Available'}
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  {user.userType === 'farmer' 
-                    ? 'Start by listing your first product to connect with buyers' 
+                  {user.userType === 'farmer'
+                    ? 'Start by listing your first product to connect with buyers'
                     : 'Check back later for fresh products from local farmers'
                   }
                 </p>
                 {user.userType === 'farmer' && (
-                  <Button 
+                  <Button
                     className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     onClick={() => onNavigate('list-product')}
                   >
@@ -306,15 +306,15 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {displayProducts.slice(0, 6).map((product) => (
-                  <Card 
-                    key={product.id} 
+                  <Card
+                    key={product.id}
                     className="bg-input-background border-border hover:border-primary/50 transition-all cursor-pointer"
                     onClick={() => onNavigate('product-details', product)}
                   >
                     <CardContent className="p-4">
                       <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
-                        <img 
-                          src={product.image} 
+                        <img
+                          src={product.image}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />

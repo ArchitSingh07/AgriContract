@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
-import { 
+import {
   ArrowLeft,
   Upload,
   Save,
@@ -77,21 +77,21 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
     };
 
     setIsSubmitting(false);
-    
+
     // Navigate back to dashboard with success message
-    onNavigate('dashboard', { 
-      message: 'Product listed successfully!', 
-      newProduct 
+    onNavigate('dashboard', {
+      message: 'Product listed successfully!',
+      newProduct
     });
   };
 
   const isFormValid = () => {
-    return formData.name && 
-           formData.type && 
-           formData.description && 
-           formData.quantity && 
-           formData.price && 
-           formData.harvestDate;
+    return formData.name &&
+      formData.type &&
+      formData.description &&
+      formData.quantity &&
+      formData.price &&
+      formData.harvestDate;
   };
 
   return (
@@ -99,8 +99,8 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
       {/* Header */}
       <header className="bg-card border-b border-border p-4">
         <div className="max-w-4xl mx-auto flex items-center space-x-4">
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             size="icon"
             onClick={() => onNavigate('dashboard')}
             className="text-muted-foreground hover:text-primary"
@@ -289,8 +289,8 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
 
                 {formData.image && (
                   <div className="aspect-video max-w-sm bg-muted rounded-lg overflow-hidden">
-                    <img 
-                      src={formData.image} 
+                    <img
+                      src={formData.image}
                       alt="Product preview"
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -305,8 +305,8 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
 
           {/* Submit Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={!isFormValid() || isSubmitting}
               className="bg-primary hover:bg-primary/90 text-primary-foreground flex-1"
             >
@@ -322,8 +322,8 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                 </>
               )}
             </Button>
-            <Button 
-              type="button" 
+            <Button
+              type="button"
               variant="outline"
               onClick={() => onNavigate('dashboard')}
               className="border-border hover:bg-accent hover:text-accent-foreground"
