@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import buyerListingRoutes from './routes/buyerListingRoutes.js';
+import negotiationRoutes from './routes/negotiationRoutes.js';
+import contractRoutes from './routes/contractRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -20,6 +24,10 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/buyer-listings', buyerListingRoutes);
+app.use('/api/negotiations', negotiationRoutes);
+app.use('/api/contracts', contractRoutes);
 
 // Root route
 app.get('/', (req, res) => {
@@ -28,9 +36,46 @@ app.get('/', (req, res) => {
     message: 'CropContract API is running',
     version: '1.0.0',
     endpoints: {
-      register: 'POST /api/auth/register',
-      login: 'POST /api/auth/login',
-      getUser: 'GET /api/auth/me (Protected)',
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+        getUser: 'GET /api/auth/me (Protected)',
+      },
+      products: {
+        create: 'POST /api/products (Farmer only)',
+        getAll: 'GET /api/products',
+        getOne: 'GET /api/products/:id',
+        update: 'PUT /api/products/:id (Farmer only)',
+        delete: 'DELETE /api/products/:id (Farmer only)',
+        getByFarmer: 'GET /api/products/farmer/:farmerId',
+      },
+      buyerListings: {
+        create: 'POST /api/buyer-listings (Buyer only)',
+        getAll: 'GET /api/buyer-listings',
+        getOne: 'GET /api/buyer-listings/:id',
+        update: 'PUT /api/buyer-listings/:id (Buyer only)',
+        delete: 'DELETE /api/buyer-listings/:id (Buyer only)',
+        getMyListings: 'GET /api/buyer-listings/my-listings',
+        addOffer: 'POST /api/buyer-listings/:id/offer (Farmer only)',
+      },
+      negotiations: {
+        start: 'POST /api/negotiations/start',
+        sendMessage: 'POST /api/negotiations/message',
+        getByProduct: 'GET /api/negotiations/product/:productId',
+        getByBuyerListing: 'GET /api/negotiations/buyer-listing/:buyerListingId',
+        getById: 'GET /api/negotiations/:id',
+        getByFarmer: 'GET /api/negotiations/farmer/:farmerId',
+        updateStatus: 'PUT /api/negotiations/:id/status',
+      },
+      contracts: {
+        create: 'POST /api/contracts/create',
+        getByFarmer: 'GET /api/contracts/farmer/:id',
+        getByBuyer: 'GET /api/contracts/buyer/:id',
+        getById: 'GET /api/contracts/:id',
+        sign: 'PUT /api/contracts/:id/sign',
+        updateStatus: 'PUT /api/contracts/:id/status',
+        getStats: 'GET /api/contracts/stats/:userId',
+      },
     },
   });
 });

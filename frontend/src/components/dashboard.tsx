@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback } from './ui/avatar';
+import { Alert, AlertDescription } from './ui/alert';
 import {
   Sprout,
   ShoppingCart,
@@ -14,22 +15,12 @@ import {
   DollarSign,
   Package,
   Sun,
-  Moon
+  Moon,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
-
-interface Product {
-  id: string;
-  name: string;
-  type: string;
-  quantity: number;
-  unit: string;
-  price: number;
-  harvestDate: string;
-  farmerId: string;
-  farmerName: string;
-  description: string;
-  image: string;
-}
+import { productService } from '../services/productService';
+import type { Product } from '../types';
 
 interface DashboardProps {
   user: any;
@@ -40,90 +31,66 @@ interface DashboardProps {
 }
 
 export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: DashboardProps) {
-  // Mock product data
-  const mockProducts: Product[] = [
-    {
-      id: '1',
-      name: 'Organic Tomatoes',
-      type: 'Vegetables',
-      quantity: 500,
-      unit: 'kg',
-      price: 45,
-      harvestDate: '2024-01-15',
-      farmerId: 'farmer1',
-      farmerName: 'John Smith',
-      description: 'Fresh organic tomatoes grown without pesticides',
-      image: 'https://images.unsplash.com/photo-1592841200221-a6898f307baa?w=400'
-    },
-    {
-      id: '2',
-      name: 'Premium Rice',
-      type: 'Grains',
-      quantity: 1000,
-      unit: 'kg',
-      price: 120,
-      harvestDate: '2024-01-20',
-      farmerId: 'farmer2',
-      farmerName: 'Maria Garcia',
-      description: 'High-quality basmati rice, aged to perfection',
-      image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400'
-    },
-    {
-      id: '3',
-      name: 'Fresh Wheat',
-      type: 'Grains',
-      quantity: 2000,
-      unit: 'kg',
-      price: 35,
-      harvestDate: '2024-01-25',
-      farmerId: 'farmer3',
-      farmerName: 'David Johnson',
-      description: 'Premium wheat suitable for flour production',
-      image: 'https://images.unsplash.com/photo-1574323347407-f5e1ad6d020b?w=400'
-    },
-    {
-      id: '4',
-      name: 'Organic Carrots',
-      type: 'Vegetables',
-      quantity: 300,
-      unit: 'kg',
-      price: 55,
-      harvestDate: '2024-01-18',
-      farmerId: 'farmer1',
-      farmerName: 'John Smith',
-      description: 'Sweet and crunchy organic carrots',
-      image: 'https://images.unsplash.com/photo-1582515073490-39981397c445?w=400'
-    }
-  ];
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const [products] = useState<Product[]>(mockProducts);
-  const [showEmptyProducts, setShowEmptyProducts] = useState(false); // Toggle this to test empty state
+  // Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        
+        let response;
+        const userRole = user.role?.toLowerCase() || user.userType;
+        
+        if (userRole === 'farmer') {
+          // Fetch only farmer's own products
+          response = await productService.getProductsByFarmer(user._id || user.id);
+        } else {
+          // Fetch all products for buyers
+          response = await productService.getAllProducts();
+        }
+        
+        // Show only first 4 products on dashboard
+        setProducts(response.products.slice(0, 4));
+      } catch (err: any) {
+        console.error('Failed to fetch products:', err);
+        setError(err.response?.data?.message || 'Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // Use empty array when testing empty state, otherwise use mockProducts
-  const displayProducts = showEmptyProducts ? [] : products;
+    fetchProducts();
+  }, [user._id, user.id, user.role, user.userType]);
+
+  // Determine user role (support both role and userType properties)
+  const userRole = (user.role?.toLowerCase() || user.userType) as 'farmer' | 'buyer';
 
   const stats = [
     {
-      title: user.userType === 'farmer' ? 'Products Listed' : 'Active Contracts',
-      value: user.userType === 'farmer' ? '12' : '8',
+      title: userRole === 'farmer' ? 'Products Listed' : 'Available Products',
+      value: products.length.toString(),
       icon: Package,
       color: 'text-primary'
     },
     {
-      title: user.userType === 'farmer' ? 'Total Revenue' : 'Total Spent',
-      value: '₹2,45,000',
+      title: userRole === 'farmer' ? 'Total Revenue' : 'Total Spent',
+      value: '₹0', // This can be calculated from contracts later
       icon: DollarSign,
       color: 'text-accent'
     },
     {
       title: 'Pending Negotiations',
-      value: '5',
+      value: '0', // This will come from contracts/negotiations
       icon: FileText,
       color: 'text-blue-400'
     },
     {
       title: 'Completed Deals',
-      value: '23',
+      value: '0', // This will come from contracts
       icon: Calendar,
       color: 'text-green-400'
     }
@@ -204,7 +171,7 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
             Welcome back, {user.name}!
           </h2>
           <p className="text-muted-foreground">
-            {user.userType === 'farmer'
+            {userRole === 'farmer'
               ? 'Manage your crops and connect with buyers'
               : 'Discover fresh produce and connect with farmers'
             }
@@ -228,9 +195,17 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
           ))}
         </div>
 
+        {/* Error Alert */}
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         {/* Action Buttons */}
         <div className="flex flex-wrap gap-4">
-          {user.userType === 'farmer' ? (
+          {userRole === 'farmer' ? (
             <Button
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
               onClick={() => onNavigate('list-product')}
@@ -262,7 +237,7 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span>
-                {user.userType === 'farmer' ? 'Your Products' : 'Available Products'}
+                {userRole === 'farmer' ? 'Your Products' : 'Available Products'}
               </span>
               <Button
                 variant="outline"
@@ -274,26 +249,31 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
               </Button>
             </CardTitle>
             <CardDescription>
-              {user.userType === 'farmer'
+              {userRole === 'farmer'
                 ? 'Manage your listed products'
                 : 'Fresh produce available for contract'
               }
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {displayProducts.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+                <p className="text-muted-foreground">Loading products...</p>
+              </div>
+            ) : products.length === 0 ? (
               <div className="text-center py-12">
                 <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {user.userType === 'farmer' ? 'No Products Listed' : 'No Products Available'}
+                  {userRole === 'farmer' ? 'No Products Listed' : 'No Products Available'}
                 </h3>
                 <p className="text-muted-foreground mb-4">
-                  {user.userType === 'farmer'
+                  {userRole === 'farmer'
                     ? 'Start by listing your first product to connect with buyers'
                     : 'Check back later for fresh products from local farmers'
                   }
                 </p>
-                {user.userType === 'farmer' && (
+                {userRole === 'farmer' && (
                   <Button
                     className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     onClick={() => onNavigate('list-product')}
@@ -305,16 +285,16 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {displayProducts.slice(0, 6).map((product) => (
+                {products.map((product) => (
                   <Card
-                    key={product.id}
-                    className="bg-input-background border-border hover:border-primary/50 transition-all cursor-pointer"
+                    key={product._id}
+                    className="bg-card border-border hover:border-primary/50 transition-all cursor-pointer"
                     onClick={() => onNavigate('product-details', product)}
                   >
                     <CardContent className="p-4">
                       <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
                         <img
-                          src={product.image}
+                          src={product.imageUrl || 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400'}
                           alt={product.name}
                           className="w-full h-full object-cover"
                         />
@@ -334,7 +314,7 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
                             {product.quantity} {product.unit}
                           </span>
                           <span className="font-semibold text-accent">
-                            ₹{product.price}/{product.unit}
+                            ₹{product.pricePerUnit}/{product.unit}
                           </span>
                         </div>
                         <div className="flex items-center text-xs text-muted-foreground">

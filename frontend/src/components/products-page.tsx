@@ -1,29 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
+import { Alert, AlertDescription } from './ui/alert';
 import {
   ArrowLeft,
   Package,
   Plus,
   Calendar,
-  Search
+  Search,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 import { Input } from './ui/input';
-
-interface Product {
-  id: string;
-  name: string;
-  type: string;
-  quantity: number;
-  unit: string;
-  price: number;
-  harvestDate: string;
-  farmerId: string;
-  farmerName: string;
-  description: string;
-  image: string;
-}
+import { productService } from '../services/productService';
+import type { Product } from '../types';
 
 interface ProductsPageProps {
   user: any;
@@ -31,9 +22,43 @@ interface ProductsPageProps {
 }
 
 export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
-  // Mock products data - set to empty array to show empty state
-  const [products] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  // Fetch products on mount
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        
+        const userRole = user.role?.toLowerCase() || user.userType;
+        
+        let response;
+        if (userRole === 'farmer') {
+          // Fetch only farmer's own products
+          response = await productService.getProductsByFarmer(user._id || user.id);
+        } else {
+          // Fetch all products for buyers
+          response = await productService.getAllProducts();
+        }
+        
+        setProducts(response.products);
+      } catch (err: any) {
+        console.error('Failed to fetch products:', err);
+        setError(err.response?.data?.message || 'Failed to load products. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [user._id, user.id, user.role, user.userType]);
+
+  // Determine user role (support both role and userType properties)
+  const userRole = (user.role?.toLowerCase() || user.userType) as 'farmer' | 'buyer';
 
   const filteredProducts = products.filter(product =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -55,16 +80,16 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
           </Button>
           <div className="flex-1">
             <h1 className="text-xl font-bold text-foreground">
-              {user.userType === 'farmer' ? 'Your Products' : 'Available Products'}
+              {userRole === 'farmer' ? 'Your Products' : 'Available Products'}
             </h1>
             <p className="text-sm text-muted-foreground">
-              {user.userType === 'farmer'
+              {userRole === 'farmer'
                 ? 'Manage your listed agricultural products'
                 : 'Browse fresh produce from local farmers'
               }
             </p>
           </div>
-          {user.userType === 'farmer' && (
+          {userRole === 'farmer' && (
             <Button
               className="bg-primary hover:bg-primary/90 text-primary-foreground"
               onClick={() => onNavigate('list-product')}
@@ -77,6 +102,14 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
       </header>
 
       <main className="max-w-6xl mx-auto p-6 space-y-6">
+        {/* Error Alert */}
+        {error && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         {/* Search and Filters */}
         <Card className="bg-card border-border">
           <CardContent className="p-4">
@@ -87,7 +120,8 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
                   placeholder="Search products..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 bg-input-background border-border"
+                  className="pl-10 bg-card border-border text-card-foreground"
+                  disabled={loading}
                 />
               </div>
             </div>
@@ -102,19 +136,24 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {filteredProducts.length === 0 ? (
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+                <p className="text-muted-foreground">Loading products...</p>
+              </div>
+            ) : filteredProducts.length === 0 ? (
               <div className="text-center py-12">
                 <Package className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
                 <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {user.userType === 'farmer' ? 'No Products Listed' : 'No Products Available'}
+                  {userRole === 'farmer' ? 'No Products Listed' : 'No Products Available'}
                 </h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  {user.userType === 'farmer'
+                  {userRole === 'farmer'
                     ? 'You haven\'t listed any products yet. Start by adding your first product to connect with potential buyers.'
                     : 'No products are currently available. Check back later for fresh produce from local farmers.'
                   }
                 </p>
-                {user.userType === 'farmer' && (
+                {userRole === 'farmer' && (
                   <Button
                     className="bg-primary hover:bg-primary/90 text-primary-foreground"
                     onClick={() => onNavigate('list-product')}
@@ -128,14 +167,14 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredProducts.map((product) => (
                   <Card
-                    key={product.id}
-                    className="bg-input-background border-border hover:border-primary/50 transition-all cursor-pointer group"
+                    key={product._id}
+                    className="bg-card border-border hover:border-primary/50 transition-all cursor-pointer group"
                     onClick={() => onNavigate('product-details', product)}
                   >
                     <CardContent className="p-4">
                       <div className="aspect-video bg-muted rounded-lg mb-3 overflow-hidden">
                         <img
-                          src={product.image}
+                          src={product.imageUrl || 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400'}
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         />
@@ -155,7 +194,7 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
                             {product.quantity} {product.unit} available
                           </span>
                           <span className="font-semibold text-accent">
-                            ₹{product.price}/{product.unit}
+                            ₹{product.pricePerUnit}/{product.unit}
                           </span>
                         </div>
                         <div className="flex items-center justify-between text-xs">
@@ -164,7 +203,7 @@ export function ProductsPage({ user, onNavigate }: ProductsPageProps) {
                             {new Date(product.harvestDate).toLocaleDateString()}
                           </div>
                           <span className="text-muted-foreground">
-                            by {product.farmerName}
+                            by {typeof product.farmerId === 'object' ? product.farmerId.name : 'Farmer'}
                           </span>
                         </div>
                       </div>

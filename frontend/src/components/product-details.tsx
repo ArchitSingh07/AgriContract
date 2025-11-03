@@ -1,12 +1,22 @@
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { Separator } from './ui/separator';
+import { Alert, AlertDescription } from './ui/alert';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from './ui/alert-dialog';
 import {
   ArrowLeft,
-  Calendar,
   MapPin,
   Phone,
   Mail,
@@ -14,34 +24,72 @@ import {
   Star,
   Truck,
   Shield,
-  Clock
+  Clock,
+  Loader2,
+  AlertCircle,
+  Trash2,
+  Edit
 } from 'lucide-react';
+import { productService } from '../services/productService';
+import type { Product } from '../types';
 
 interface ProductDetailsProps {
-  product: any;
+  product: Product;
   user: any;
   onNavigate: (page: string, data?: any) => void;
 }
 
 export function ProductDetails({ product, user, onNavigate }: ProductDetailsProps) {
   const [quantity, setQuantity] = useState(100);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState('');
 
   const handleStartNegotiation = () => {
     const negotiationData = {
-      productId: product.id,
-      buyerId: user.id,
-      sellerId: product.farmerId,
+      productId: product._id,
+      buyerId: user._id || user.id,
+      sellerId: typeof product.farmerId === 'object' ? product.farmerId._id : product.farmerId,
       productName: product.name,
-      sellerName: product.farmerName,
+      sellerName: typeof product.farmerId === 'object' ? product.farmerId.name : 'Farmer',
       buyerName: user.name,
       initialOffer: {
         quantity,
-        pricePerUnit: product.price,
-        totalPrice: quantity * product.price,
+        pricePerUnit: product.pricePerUnit,
+        totalPrice: quantity * product.pricePerUnit,
         deliveryDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
       }
     };
     onNavigate('negotiation', negotiationData);
+  };
+
+  const handleDelete = async () => {
+    try {
+      setIsDeleting(true);
+      setError('');
+      
+      console.log('Attempting to delete product:', product._id);
+      
+      await productService.deleteProduct(product._id);
+      
+      console.log('Product deleted successfully, navigating to dashboard');
+      
+      // Navigate back to appropriate dashboard based on user type
+      const userRole = (user.role?.toLowerCase() || user.userType) as 'farmer' | 'buyer';
+      const dashboardPage = userRole === 'farmer' ? 'farmer-dashboard' : 'dashboard';
+      
+      onNavigate(dashboardPage, {
+        message: 'Product deleted successfully!'
+      });
+    } catch (err: any) {
+      console.error('Failed to delete product:', err);
+      console.error('Error response:', err.response?.data);
+      
+      const errorMessage = err.response?.data?.message || 'Failed to delete product. Please try again.';
+      setError(errorMessage);
+      setIsDeleting(false);
+      setShowDeleteDialog(false);
+    }
   };
 
   const features = [
@@ -50,7 +98,14 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
     { icon: Clock, title: 'Fresh Harvest', description: 'Recently harvested' },
   ];
 
-  const isOwnProduct = user.userType === 'farmer' && user.id === product.farmerId;
+  const farmerId = typeof product.farmerId === 'object' ? product.farmerId._id : product.farmerId;
+  const farmerName = typeof product.farmerId === 'object' ? product.farmerId.name : 'Farmer';
+  const userRole = (user.role?.toLowerCase() || user.userType) as 'farmer' | 'buyer';
+  const userId = user._id || user.id;
+  const isOwnProduct = userRole === 'farmer' && userId === farmerId;
+  
+  // Determine the appropriate dashboard to navigate back to
+  const dashboardPage = userRole === 'farmer' ? 'farmer-dashboard' : 'dashboard';
 
   return (
     <div className="min-h-screen bg-background">
@@ -60,7 +115,7 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onNavigate('dashboard')}
+            onClick={() => onNavigate(dashboardPage)}
             className="text-muted-foreground hover:text-primary"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -75,12 +130,20 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
       </header>
 
       <main className="max-w-4xl mx-auto p-6">
+        {/* Error Alert */}
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Images */}
           <div className="space-y-4">
             <div className="aspect-square bg-muted rounded-lg overflow-hidden">
               <img
-                src={product.image}
+                src={product.imageUrl || 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400'}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -89,7 +152,7 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="aspect-square bg-muted rounded-lg overflow-hidden opacity-60">
                   <img
-                    src={product.image}
+                    src={product.imageUrl || 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400'}
                     alt={`${product.name} ${i}`}
                     className="w-full h-full object-cover"
                   />
@@ -125,7 +188,7 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-lg text-muted-foreground">Price per {product.unit}:</span>
-                <span className="text-2xl font-bold text-accent">₹{product.price}</span>
+                <span className="text-2xl font-bold text-accent">₹{product.pricePerUnit}</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Available Quantity:</span>
@@ -142,16 +205,16 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
             <Separator className="bg-border" />
 
             {/* Farmer Information */}
-            <Card className="bg-input-background border-border">
+            <Card className="bg-card border-border">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-3">
                   <Avatar>
                     <AvatarFallback className="bg-primary text-primary-foreground">
-                      {product.farmerName.charAt(0)}
+                      {farmerName.charAt(0)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="text-foreground">{product.farmerName}</p>
+                    <p className="text-foreground">{farmerName}</p>
                     <p className="text-sm text-muted-foreground">Certified Farmer</p>
                   </div>
                 </CardTitle>
@@ -159,15 +222,15 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
               <CardContent className="space-y-3">
                 <div className="flex items-center space-x-2 text-muted-foreground">
                   <MapPin className="h-4 w-4" />
-                  <span className="text-sm">California, USA</span>
+                  <span className="text-sm">{product.location || 'Location not specified'}</span>
                 </div>
                 <div className="flex items-center space-x-2 text-muted-foreground">
                   <Phone className="h-4 w-4" />
-                  <span className="text-sm">+1 (555) 123-4567</span>
+                  <span className="text-sm">Contact via platform</span>
                 </div>
                 <div className="flex items-center space-x-2 text-muted-foreground">
                   <Mail className="h-4 w-4" />
-                  <span className="text-sm">{product.farmerName.toLowerCase().replace(' ', '.')}@farm.com</span>
+                  <span className="text-sm">{farmerName.toLowerCase().replace(' ', '.')}@farm.com</span>
                 </div>
               </CardContent>
             </Card>
@@ -186,7 +249,7 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
             </div>
 
             {/* Actions */}
-            {!isOwnProduct && user.userType === 'buyer' && (
+            {!isOwnProduct && userRole === 'buyer' && (
               <div className="space-y-4">
                 <div className="flex items-center space-x-4">
                   <label className="text-sm font-medium text-foreground">Quantity needed:</label>
@@ -213,11 +276,11 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
                   </div>
                 </div>
 
-                <div className="p-4 bg-input-background border border-border rounded-lg">
+                <div className="p-4 bg-card border border-border rounded-lg">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-muted-foreground">Estimated Total:</span>
                     <span className="text-xl font-bold text-accent">
-                      ₹{(quantity * product.price).toLocaleString()}
+                      ₹{(quantity * product.pricePerUnit).toLocaleString()}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -248,19 +311,63 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
                 <Button
                   variant="outline"
                   className="w-full border-border hover:bg-accent hover:text-accent-foreground"
+                  onClick={() => onNavigate('edit-product', product)}
                 >
+                  <Edit className="h-4 w-4 mr-2" />
                   Edit Product
                 </Button>
                 <Button
                   variant="outline"
                   className="w-full border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                  onClick={() => setShowDeleteDialog(true)}
+                  disabled={isDeleting}
                 >
-                  Remove Listing
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Deleting...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Remove Listing
+                    </>
+                  )}
                 </Button>
               </div>
             )}
           </div>
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This will permanently delete your product listing for "{product.name}". 
+                This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </main>
     </div>
   );

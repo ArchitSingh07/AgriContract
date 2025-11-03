@@ -4,13 +4,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
+import { Alert, AlertDescription } from './ui/alert';
 import {
   ArrowLeft,
   Upload,
   Save,
   Package,
-  IndianRupee
+  IndianRupee,
+  Loader2,
+  AlertCircle,
+  CheckCircle2
 } from 'lucide-react';
+import { productService } from '../services/productService';
+import type { CreateProductData } from '../types';
 
 interface ListProductProps {
   user: any;
@@ -31,6 +37,12 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  
+  // Determine the appropriate dashboard based on user type
+  const userRole = (user.role?.toLowerCase() || user.userType) as 'farmer' | 'buyer';
+  const dashboardPage = userRole === 'farmer' ? 'farmer-dashboard' : 'dashboard';
 
   const productTypes = [
     'Vegetables',
@@ -46,9 +58,10 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
     'kg',
     'quintal',
     'ton',
-    'piece',
-    'dozen',
-    'liter'
+    'bags',
+    'crates',
+    'boxes',
+    'pieces'
   ];
 
   const handleInputChange = (field: string, value: string) => {
@@ -61,28 +74,41 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError('');
+    setSuccess('');
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      // Prepare product data for API
+      const productData: CreateProductData = {
+        name: formData.name,
+        type: formData.type,
+        description: formData.description,
+        location: formData.location || user?.location || '',
+        quantity: parseFloat(formData.quantity),
+        unit: formData.unit,
+        pricePerUnit: parseFloat(formData.price),
+        harvestDate: formData.harvestDate,
+        imageUrl: formData.image || undefined
+      };
 
-    // Create new product object
-    const newProduct = {
-      id: Date.now().toString(),
-      ...formData,
-      quantity: parseInt(formData.quantity),
-      price: parseFloat(formData.price),
-      farmerId: user.id,
-      farmerName: user.name,
-      image: formData.image || 'https://images.unsplash.com/photo-1560493676-04071c5f467b?w=400'
-    };
+      // Call backend API
+      const newProduct = await productService.createProduct(productData);
 
-    setIsSubmitting(false);
+      setSuccess('Product listed successfully!');
+      
+      // Wait a moment to show success message
+      setTimeout(() => {
+        onNavigate(dashboardPage, {
+          message: 'Product listed successfully!',
+          newProduct
+        });
+      }, 1500);
 
-    // Navigate back to dashboard with success message
-    onNavigate('dashboard', {
-      message: 'Product listed successfully!',
-      newProduct
-    });
+    } catch (err: any) {
+      console.error('Failed to create product:', err);
+      setError(err.response?.data?.message || 'Failed to create product. Please try again.');
+      setIsSubmitting(false);
+    }
   };
 
   const isFormValid = () => {
@@ -102,7 +128,7 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => onNavigate('dashboard')}
+            onClick={() => onNavigate(dashboardPage)}
             className="text-muted-foreground hover:text-primary"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -117,6 +143,23 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
       </header>
 
       <main className="max-w-4xl mx-auto p-6">
+        {/* Error/Success Messages */}
+        {error && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        )}
+
+        {success && (
+          <Alert className="mb-6 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800">
+            <CheckCircle2 className="h-4 w-4 text-green-600 dark:text-green-400" />
+            <AlertDescription className="text-green-800 dark:text-green-300">
+              {success}
+            </AlertDescription>
+          </Alert>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Basic Information */}
@@ -138,7 +181,9 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                     placeholder="e.g., Organic Tomatoes"
                     value={formData.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className="bg-input-background border-border"
+                    className="bg-card border-border text-card-foreground"
+                    required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -148,7 +193,9 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                     id="type"
                     value={formData.type}
                     onChange={(e) => handleInputChange('type', e.target.value)}
-                    className="w-full px-3 py-2 bg-card border border-border rounded-md text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    className="w-full px-3 py-2 bg-card border border-border rounded-md text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    required
+                    disabled={isSubmitting}
                   >
                     <option value="" className="bg-card text-card-foreground">Select product type</option>
                     {productTypes.map(type => (
@@ -164,7 +211,9 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                     placeholder="Describe your product quality, farming methods, etc."
                     value={formData.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    className="bg-input-background border-border min-h-[100px]"
+                    className="bg-card border-border text-card-foreground min-h-[100px]"
+                    required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -175,7 +224,8 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                     placeholder="e.g., Punjab, India"
                     value={formData.location}
                     onChange={(e) => handleInputChange('location', e.target.value)}
-                    className="bg-input-background border-border"
+                    className="bg-card border-border text-card-foreground"
+                    disabled={isSubmitting}
                   />
                 </div>
               </CardContent>
@@ -202,7 +252,11 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                       placeholder="500"
                       value={formData.quantity}
                       onChange={(e) => handleInputChange('quantity', e.target.value)}
-                      className="bg-input-background border-border"
+                      className="bg-card border-border text-card-foreground"
+                      required
+                      min="0"
+                      step="0.01"
+                      disabled={isSubmitting}
                     />
                   </div>
 
@@ -212,7 +266,9 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                       id="unit"
                       value={formData.unit}
                       onChange={(e) => handleInputChange('unit', e.target.value)}
-                      className="w-full px-3 py-2 bg-card border border-border rounded-md text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      className="w-full px-3 py-2 bg-card border border-border rounded-md text-card-foreground focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                      required
+                      disabled={isSubmitting}
                     >
                       {units.map(unit => (
                         <option key={unit} value={unit} className="bg-card text-card-foreground">{unit}</option>
@@ -230,7 +286,10 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                     placeholder="45.00"
                     value={formData.price}
                     onChange={(e) => handleInputChange('price', e.target.value)}
-                    className="bg-input-background border-border"
+                    className="bg-card border-border text-card-foreground"
+                    required
+                    min="0"
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -241,7 +300,9 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                     type="date"
                     value={formData.harvestDate}
                     onChange={(e) => handleInputChange('harvestDate', e.target.value)}
-                    className="bg-input-background border-border"
+                    className="bg-card border-border text-card-foreground"
+                    required
+                    disabled={isSubmitting}
                   />
                 </div>
 
@@ -280,7 +341,8 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
                     placeholder="https://example.com/image.jpg"
                     value={formData.image}
                     onChange={(e) => handleInputChange('image', e.target.value)}
-                    className="bg-input-background border-border"
+                    className="bg-card border-border text-card-foreground"
+                    disabled={isSubmitting}
                   />
                   <p className="text-xs text-muted-foreground">
                     Provide a URL to your product image, or leave empty for a default image
@@ -312,7 +374,7 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                   Listing Product...
                 </>
               ) : (
@@ -325,8 +387,9 @@ export function ListProduct({ user, onNavigate }: ListProductProps) {
             <Button
               type="button"
               variant="outline"
-              onClick={() => onNavigate('dashboard')}
+              onClick={() => onNavigate(dashboardPage)}
               className="border-border hover:bg-accent hover:text-accent-foreground"
+              disabled={isSubmitting}
             >
               Cancel
             </Button>

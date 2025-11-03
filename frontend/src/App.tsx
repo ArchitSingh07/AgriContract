@@ -2,15 +2,30 @@ import { useState, useEffect } from "react";
 import { UserTypeSelection } from "./components/user-type-selection";
 import { LoginPage } from "./components/login-page";
 import { Dashboard } from "./components/dashboard";
+import { FarmerDashboard } from "./components/farmer-dashboard";
+import { BuyerDashboard } from "./components/buyer-dashboard";
 import { ProductDetails } from "./components/product-details";
 import { NegotiationChat } from "./components/negotiation-chat";
+import { FarmerChat } from "./components/farmer-chat";
+import { BuyerChat } from "./components/buyer-chat";
 import { ContractFinalization } from "./components/contract-finalization";
 import { ContractView } from "./components/contract-view";
+import { ContractDetails } from "./components/contract-details";
 import { PaymentPage } from "./components/payment-page";
 import { ProfilePage } from "./components/profile-page";
 import { ListProduct } from "./components/list-product";
+import { EditProduct } from "./components/edit-product";
+import { MyProducts } from "./components/my-products";
 import { ProductsPage } from "./components/products-page";
 import { ContractsPage } from "./components/contracts-page";
+import { FarmerContracts } from "./components/farmer-contracts";
+import { BuyerContracts } from "./components/buyer-contracts";
+import BuyerRequests from "./components/buyer-requests";
+import BuyerListingDetails from "./components/buyer-listing-details";
+import CreateBuyerListing from "./components/create-buyer-listing";
+import MyBuyerListings from "./components/my-buyer-listings";
+import { BrowseFarmerListings } from "./components/browse-farmer-listings";
+import { FarmerListingDetails } from "./components/farmer-listing-details";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState(
@@ -36,11 +51,17 @@ export default function App() {
   };
 
   const handleLogin = (
-    userType: "farmer" | "buyer",
+    _userType: "farmer" | "buyer",
     userData: any,
   ) => {
     setCurrentUser(userData);
-    setCurrentPage("dashboard");
+    // Redirect to appropriate dashboard based on user type
+    const userRole = userData.userType?.toLowerCase() || userData.role?.toLowerCase();
+    if (userRole === 'farmer') {
+      setCurrentPage("farmer-dashboard");
+    } else {
+      setCurrentPage("buyer-dashboard");
+    }
   };
 
   const handleLogout = () => {
@@ -107,9 +128,44 @@ export default function App() {
           onToggleTheme={toggleTheme}
         />
       );
+    case "farmer-dashboard":
+      return (
+        <FarmerDashboard
+          user={currentUser}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+      );
+    case "buyer-dashboard":
+      return (
+        <BuyerDashboard
+          user={currentUser}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+      );
     case "list-product":
       return (
         <ListProduct
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "edit-product":
+      return (
+        <EditProduct
+          product={pageData as any}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+        />
+      );
+    case "my-products":
+      return (
+        <MyProducts
           user={currentUser}
           onNavigate={handleNavigate}
         />
@@ -128,10 +184,70 @@ export default function App() {
           onNavigate={handleNavigate}
         />
       );
+    case "farmer-contracts":
+      return (
+        <FarmerContracts
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "buyer-contracts":
+      return (
+        <BuyerContracts
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "buyer-requests":
+      return (
+        <BuyerRequests
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "buyer-listing-details":
+      console.log('App.tsx - buyer-listing-details pageData:', pageData);
+      console.log('App.tsx - Extracted listingId:', (pageData as any)?.listingId || (pageData as any));
+      return (
+        <BuyerListingDetails
+          listingId={(pageData as any)?.listingId || (pageData as any)}
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "create-buyer-listing":
+      return (
+        <CreateBuyerListing
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "my-buyer-listings":
+      return (
+        <MyBuyerListings
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "browse-farmer-listings":
+      return (
+        <BrowseFarmerListings
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "farmer-listing-details":
+      return (
+        <FarmerListingDetails
+          product={pageData as any}
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
     case "product-details":
       return (
         <ProductDetails
-          product={pageData}
+          product={pageData as any}
           user={currentUser}
           onNavigate={handleNavigate}
         />
@@ -140,6 +256,23 @@ export default function App() {
       return (
         <NegotiationChat
           negotiationData={pageData}
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "farmer-chat":
+      return (
+        <FarmerChat
+          negotiationId={(pageData as any)?.negotiationId}
+          productId={(pageData as any)?.productId}
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "buyer-chat":
+      return (
+        <BuyerChat
+          negotiationId={(pageData as any)?.negotiationId || (pageData as any)}
           user={currentUser}
           onNavigate={handleNavigate}
         />
@@ -156,6 +289,14 @@ export default function App() {
       return (
         <ContractView
           contractData={pageData}
+          user={currentUser}
+          onNavigate={handleNavigate}
+        />
+      );
+    case "contract-details":
+      return (
+        <ContractDetails
+          contract={pageData as any}
           user={currentUser}
           onNavigate={handleNavigate}
         />
