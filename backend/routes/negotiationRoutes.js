@@ -285,6 +285,42 @@ router.get('/:id', protect, async (req, res) => {
   }
 });
 
+// @route   GET /api/negotiations/my-negotiations
+// @desc    Get all negotiations for current user (both as farmer and buyer)
+// @access  Private
+router.get('/my-negotiations', protect, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const negotiations = await Negotiation.find({
+      $or: [
+        { farmerId: userId },
+        { buyerId: userId }
+      ]
+    })
+      .populate('farmerId', 'name email rating')
+      .populate('buyerId', 'name email rating')
+      .sort('-lastActivity');
+
+    // Populate the appropriate listing for each negotiation
+    for (const negotiation of negotiations) {
+      if (negotiation.listingType === 'product') {
+        await negotiation.populate('productId', 'name pricePerUnit imageUrl quantity unit');
+      } else {
+        await negotiation.populate('buyerListingId', 'cropName preferredPrice deliveryLocation quantity unit');
+      }
+    }
+
+    res.json({
+      success: true,
+      negotiations
+    });
+  } catch (error) {
+    console.error('Error fetching negotiations:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 // @route   GET /api/negotiations/farmer/:farmerId
 // @desc    Get all negotiations for a farmer
 // @access  Private

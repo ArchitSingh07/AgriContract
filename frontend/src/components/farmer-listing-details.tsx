@@ -15,14 +15,6 @@ import {
   CheckCircle,
   AlertCircle
 } from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from './ui/dialog';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
@@ -47,6 +39,10 @@ export function FarmerListingDetails({ product, user, onNavigate }: FarmerListin
   const [success, setSuccess] = useState('');
 
   const handleStartNegotiation = async () => {
+    console.log('handleStartNegotiation called');
+    console.log('User:', user);
+    console.log('Product:', product);
+    
     if (!negotiationMessage.trim()) {
       setError('Please enter a message');
       return;
@@ -64,21 +60,34 @@ export function FarmerListingDetails({ product, user, onNavigate }: FarmerListin
           }
         : undefined;
 
-      const response = await negotiationService.startNegotiation({
-        productId: product._id,
-        farmerId: product.farmerId._id,
-        buyerId: user._id || user.id,
+      // Extract farmerId as string
+      const farmerIdString = typeof product.farmerId === 'object' && product.farmerId._id 
+        ? product.farmerId._id 
+        : String(product.farmerId);
+
+      const negotiationData = {
+        productId: String(product._id),
+        farmerId: farmerIdString,
+        buyerId: String(user._id || user.id),
         initialMessage: negotiationMessage,
         offerDetails,
-      });
+      };
+
+      console.log('Starting negotiation with data:', negotiationData);
+
+      const response = await negotiationService.startNegotiation(negotiationData);
+      
+      console.log('Negotiation started successfully:', response);
 
       setSuccess('Negotiation started successfully!');
       setTimeout(() => {
         onNavigate('buyer-chat', { negotiationId: response.negotiation._id });
       }, 1500);
     } catch (err: any) {
-      console.error('Failed to start negotiation:', err);
-      setError(err.response?.data?.message || 'Failed to start negotiation');
+      console.error('Failed to start negotiation - Full error:', err);
+      console.error('Error response:', err.response);
+      console.error('Error data:', err.response?.data);
+      setError(err.response?.data?.message || err.message || 'Failed to start negotiation');
     } finally {
       setLoading(false);
     }
@@ -250,8 +259,11 @@ export function FarmerListingDetails({ product, user, onNavigate }: FarmerListin
                 <Button
                   className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-lg font-semibold"
                   onClick={() => {
+                    console.log('Start Negotiation button clicked!');
+                    console.log('Current user:', user);
                     handleResetDialog();
                     setShowNegotiationDialog(true);
+                    console.log('Dialog should open now, showNegotiationDialog set to true');
                   }}
                 >
                   <MessageSquare className="h-5 w-5 mr-2" />
@@ -297,17 +309,18 @@ export function FarmerListingDetails({ product, user, onNavigate }: FarmerListin
       </main>
 
       {/* Start Negotiation Dialog */}
-      <Dialog open={showNegotiationDialog} onOpenChange={setShowNegotiationDialog}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle>Start Negotiation</DialogTitle>
-            <DialogDescription>
-              Send your initial offer and message to the farmer. You can negotiate further in the chat.
-            </DialogDescription>
-          </DialogHeader>
+      {showNegotiationDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowNegotiationDialog(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-[500px] w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="mb-4">
+                <h2 className="text-xl font-semibold text-foreground">Start Negotiation</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Send your initial offer and message to the farmer. You can negotiate further in the chat.
+                </p>
+              </div>
 
-          <div className="space-y-4 py-4">
-            {error && (
+              <div className="space-y-4">{error && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
@@ -383,7 +396,7 @@ export function FarmerListingDetails({ product, user, onNavigate }: FarmerListin
             )}
           </div>
 
-          <DialogFooter>
+          <div className="flex gap-2 mt-6">
             <Button
               variant="outline"
               onClick={() => {
@@ -391,13 +404,14 @@ export function FarmerListingDetails({ product, user, onNavigate }: FarmerListin
                 handleResetDialog();
               }}
               disabled={loading}
+              className="flex-1"
             >
               Cancel
             </Button>
             <Button
               onClick={handleStartNegotiation}
               disabled={loading || !negotiationMessage.trim()}
-              className="bg-primary hover:bg-primary/90"
+              className="bg-primary hover:bg-primary/90 flex-1"
             >
               {loading ? (
                 <>
@@ -411,9 +425,11 @@ export function FarmerListingDetails({ product, user, onNavigate }: FarmerListin
                 </>
               )}
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </div>
+        </div>
+      </div>
+    </div>
+      )}
     </div>
   );
 }

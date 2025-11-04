@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Badge } from './ui/badge';
@@ -28,10 +28,13 @@ import {
   Loader2,
   AlertCircle,
   Trash2,
-  Edit
+  Edit,
+  Users,
+  Send
 } from 'lucide-react';
 import { productService } from '../services/productService';
-import type { Product } from '../types';
+import { negotiationService } from '../services/negotiationService';
+import type { Product, Negotiation } from '../types';
 
 interface ProductDetailsProps {
   product: Product;
@@ -44,6 +47,43 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState('');
+  const [negotiations, setNegotiations] = useState<Negotiation[]>([]);
+  const [loadingNegotiations, setLoadingNegotiations] = useState(false);
+
+  const currentUserId = user._id || user.id;
+  const productFarmerId = typeof product.farmerId === 'object' ? product.farmerId._id : product.farmerId;
+  const isOwner = productFarmerId === currentUserId;
+
+  console.log('Product Details Debug:');
+  console.log('product.farmerId:', product.farmerId);
+  console.log('productFarmerId:', productFarmerId);
+  console.log('user._id:', user._id);
+  console.log('user.id:', user.id);
+  console.log('currentUserId:', currentUserId);
+  console.log('isOwner:', isOwner);
+  console.log('negotiations:', negotiations);
+
+  useEffect(() => {
+    console.log('useEffect running, isOwner:', isOwner);
+    if (isOwner) {
+      console.log('Fetching negotiations for product:', product._id);
+      fetchNegotiations();
+    }
+  }, [product._id, isOwner]);
+
+  const fetchNegotiations = async () => {
+    try {
+      setLoadingNegotiations(true);
+      console.log('Calling API to fetch negotiations...');
+      const response = await negotiationService.getNegotiationsByProduct(product._id);
+      console.log('Negotiations response:', response);
+      setNegotiations(response.negotiations || []);
+    } catch (err: any) {
+      console.error('Failed to fetch negotiations:', err);
+    } finally {
+      setLoadingNegotiations(false);
+    }
+  };
 
   const handleStartNegotiation = () => {
     const negotiationData = {
@@ -338,6 +378,101 @@ export function ProductDetails({ product, user, onNavigate }: ProductDetailsProp
             )}
           </div>
         </div>
+
+        {/* Negotiations Section - Only show if farmer owns this product */}
+        {isOwner && (
+          <Card className="mt-6">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                Incoming Negotiations ({negotiations.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loadingNegotiations ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-muted-foreground">Loading negotiations...</span>
+                </div>
+              ) : negotiations.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MessageCircle className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                  <p>No negotiations yet for this product</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {negotiations.map((negotiation: any) => {
+                    const buyer = typeof negotiation.buyerId === 'object' ? negotiation.buyerId : { name: 'Buyer', email: '' };
+                    const latestMessage = negotiation.messages && negotiation.messages.length > 0 
+                      ? negotiation.messages[negotiation.messages.length - 1] 
+                      : null;
+                    
+                    return (
+                    <Card key={negotiation._id} className="border-2 hover:border-primary/50 transition-colors">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarFallback className="bg-primary/10 text-primary">
+                                {buyer.name.charAt(0).toUpperCase()}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-semibold">{buyer.name}</p>
+                              <p className="text-sm text-muted-foreground">{buyer.email}</p>
+                            </div>
+                          </div>
+                          <Badge 
+                            variant={
+                              negotiation.status === 'active' ? 'default' :
+                              negotiation.status === 'accepted' ? 'default' :
+                              negotiation.status === 'rejected' ? 'destructive' : 'secondary'
+                            }
+                          >
+                            {negotiation.status}
+                          </Badge>
+                        </div>
+
+                        {latestMessage && (
+                          <div className="bg-muted p-3 rounded-lg mb-3">
+                            <p className="text-sm font-medium mb-1">Latest Message:</p>
+                            <p className="text-sm text-muted-foreground">
+                              {latestMessage.message || latestMessage.text || 'No message'}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {new Date(latestMessage.timestamp || latestMessage.createdAt).toLocaleString()}
+                            </p>
+                          </div>
+                        )}
+
+                        {negotiation.offerDetails && (
+                          <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
+                            <div>
+                              <span className="text-muted-foreground">Offered Price:</span>
+                              <p className="font-semibold">₹{negotiation.offerDetails.price}/{product.unit}</p>
+                            </div>
+                            <div>
+                              <span className="text-muted-foreground">Quantity:</span>
+                              <p className="font-semibold">{negotiation.offerDetails.quantity} {product.unit}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        <Button
+                          className="w-full"
+                          onClick={() => onNavigate('farmer-chat', { negotiationId: negotiation._id })}
+                        >
+                          <Send className="h-4 w-4 mr-2" />
+                          Open Chat & Respond
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  )})}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

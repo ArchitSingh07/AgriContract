@@ -19,9 +19,21 @@ export const negotiationService = {
     return response.data;
   },
 
+  // Get all negotiations for the current user
+  getMyNegotiations: async (): Promise<NegotiationsResponse> => {
+    const response = await axiosInstance.get('/negotiations/my-negotiations');
+    return response.data;
+  },
+
   // Get all negotiations for a product
   getNegotiationsByProduct: async (productId: string): Promise<NegotiationsResponse> => {
     const response = await axiosInstance.get(`/negotiations/product/${productId}`);
+    return response.data;
+  },
+
+  // Get all negotiations for a buyer listing
+  getNegotiationsByBuyerListing: async (buyerListingId: string): Promise<NegotiationsResponse> => {
+    const response = await axiosInstance.get(`/negotiations/buyer-listing/${buyerListingId}`);
     return response.data;
   },
 

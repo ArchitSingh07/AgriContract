@@ -21,16 +21,6 @@ import {
 import { contractService } from '../services/contractService';
 import type { Contract } from '../types';
 import { format } from 'date-fns';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "./ui/alert-dialog";
 
 interface ContractDetailsProps {
   contract: Contract;
@@ -59,13 +49,22 @@ export function ContractDetails({ contract: initialContract, user, onNavigate }:
       setError('');
       setSuccess('');
 
+      console.log('Signing contract:', contract._id);
+      console.log('User role:', userRole);
+      console.log('Contract before signing:', contract);
+
       const response = await contractService.signContract(contract._id);
+      
+      console.log('Sign contract response:', response);
+      
       setContract(response.contract);
       setSuccess('Contract signed successfully!');
       setShowSignDialog(false);
     } catch (err: any) {
-      console.error('Failed to sign contract:', err);
-      setError(err.response?.data?.message || 'Failed to sign contract');
+      console.error('Failed to sign contract - Full error:', err);
+      console.error('Error response:', err.response);
+      console.error('Error data:', err.response?.data);
+      setError(err.response?.data?.message || err.message || 'Failed to sign contract');
     } finally {
       setLoading(false);
     }
@@ -422,7 +421,13 @@ export function ContractDetails({ contract: initialContract, user, onNavigate }:
                 <CardContent className="p-6">
                   <Button
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground h-12 text-lg font-semibold"
-                    onClick={() => setShowSignDialog(true)}
+                    onClick={() => {
+                      console.log('Sign Contract button clicked!');
+                      console.log('isUserSigned:', isUserSigned);
+                      console.log('fullySigned:', fullySigned);
+                      console.log('Setting showSignDialog to true');
+                      setShowSignDialog(true);
+                    }}
                     disabled={loading}
                   >
                     {loading ? (
@@ -455,37 +460,54 @@ export function ContractDetails({ contract: initialContract, user, onNavigate }:
       </main>
 
       {/* Sign Confirmation Dialog */}
-      <AlertDialog open={showSignDialog} onOpenChange={setShowSignDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Sign Contract</AlertDialogTitle>
-            <AlertDialogDescription>
-              By signing this contract, you confirm that you have read and agree to all the terms and
-              conditions. This action is legally binding and cannot be undone.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={loading}>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleSign}
-              disabled={loading}
-              className="bg-primary hover:bg-primary/90"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Signing...
-                </>
-              ) : (
-                <>
-                  <FileSignature className="h-4 w-4 mr-2" />
-                  Confirm & Sign
-                </>
+      {showSignDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setShowSignDialog(false)}>
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
+            <div className="p-6">
+              <h2 className="text-xl font-semibold text-foreground mb-2">Sign Contract</h2>
+              <p className="text-sm text-muted-foreground mb-6">
+                By signing this contract, you confirm that you have read and agree to all the terms and
+                conditions. This action is legally binding and cannot be undone.
+              </p>
+              
+              {error && (
+                <Alert variant="destructive" className="mb-4">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
               )}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowSignDialog(false)}
+                  disabled={loading}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleSign}
+                  disabled={loading}
+                  className="bg-primary hover:bg-primary/90 flex-1"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Signing...
+                    </>
+                  ) : (
+                    <>
+                      <FileSignature className="h-4 w-4 mr-2" />
+                      Confirm & Sign
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
