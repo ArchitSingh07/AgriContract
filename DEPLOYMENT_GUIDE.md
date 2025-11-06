@@ -1,6 +1,19 @@
-# Deployment Guide
+# 🚀 Deployment Guide - CropContract Platform
 
-Complete guide to deploy AgriContract platform - Backend on Render and Frontend on Vercel.
+This guide explains how to deploy the CropContract platform with the backend on Render and frontend on Vercel.
+
+## 📋 Prerequisites
+
+- MongoDB Atlas account (for production database)
+- GitHub repository with your code
+- Render account (free tier available)
+- Vercel account (free tier available)
+
+## 🎯 Deployment Overview
+
+- **Backend**: Node.js Express API → Render
+- **Frontend**: React + Vite → Vercel
+- **Database**: MongoDB Atlas
 
 ---
 
