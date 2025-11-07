@@ -11,7 +11,7 @@ import {
   LogOut,
   Plus,
   Calendar,
-  DollarSign,
+  IndianRupee,
   Package,
   Sun,
   Moon,
@@ -97,7 +97,7 @@ export function FarmerDashboard({ user, onNavigate, onLogout, theme, onToggleThe
     {
       title: 'Total Revenue',
       value: `₹${stats?.totalValue.toLocaleString('en-IN') || '0'}`,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: 'text-green-500',
       bgColor: 'bg-green-500/10'
     }

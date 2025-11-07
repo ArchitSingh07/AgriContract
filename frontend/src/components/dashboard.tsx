@@ -12,7 +12,7 @@ import {
   LogOut,
   Plus,
   Calendar,
-  DollarSign,
+  IndianRupee,
   Package,
   Sun,
   Moon,
@@ -79,7 +79,7 @@ export function Dashboard({ user, onNavigate, onLogout, theme, onToggleTheme }: 
     {
       title: userRole === 'farmer' ? 'Total Revenue' : 'Total Spent',
       value: '₹0', // This can be calculated from contracts later
-      icon: DollarSign,
+      icon: IndianRupee,
       color: 'text-accent'
     },
     {

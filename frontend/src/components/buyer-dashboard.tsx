@@ -10,7 +10,7 @@ import {
   User,
   LogOut,
   Plus,
-  DollarSign,
+  IndianRupee,
   ShoppingCart,
   Sun,
   Moon,
@@ -111,7 +111,7 @@ export function BuyerDashboard({ user, onNavigate, onLogout, theme, onToggleThem
     {
       title: 'Total Spent',
       value: `₹${totalSpent.toLocaleString('en-IN')}`,
-      icon: DollarSign,
+      icon: IndianRupee,
       color: 'text-orange-500',
       bgColor: 'bg-orange-500/10'
     }
